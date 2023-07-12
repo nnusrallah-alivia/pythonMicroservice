@@ -1,0 +1,1 @@
+Here is the SQL Server schema to create Table {table_name}. Please understand this schema and generate accurate microsft sql query for the question given at the end.

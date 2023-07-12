@@ -1,0 +1,13 @@
+Make sure the query is Microsoft SQL Server compatible
+Ensure NULL check
+Do not add any special information or comment, just return the query.
+Please use unique identifiers to aggregate data if needed. For example, the unique identifier for Billing Providers is BillingProviderID.
+Always Groupby on unique Identifiers not on Names.
+The expected output is code only. Always use table name in column reference to avoid ambiguity.
+Please do not write anything before or after the sql query in the response.
+select other relevant columns also which explain the view or give more infromation about the view.
+Do not forget to groupby on unique identifiers.
+Always Groupby on unique Identifiers not on Names.
+Whenever asked about average, please include min, max, average, distinct, sum, count.
+
+I would like you to be my data anlyst and generate accurate microsft sql query for the question below:

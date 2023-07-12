@@ -1,0 +1,189 @@
+CREATE TABLE AI_AllMedicalClaimsApproved (
+	ClaimSeq bigint(nan) PRIMARY KEY, -- Unique identifier of claim transaction
+	ClaimICN varchar(30) NOT NULL, -- Claim header
+	ClaimLineNumber int(nan) NOT NULL, -- Claim line
+	ClaimStatusSeqNumber int(nan), -- Orders iterations of a claim
+	OriginalClaimICN varchar(30), -- Original claim header
+	OriginalClaimLineNumber int(nan), -- Original claim line
+	ClaimBillType varchar(3) NOT NULL, -- Recorded on UB-04 Claims: facility, type of care, and frequency
+	AmountPaid money(nan) NOT NULL, -- Total amount paid for the claim line
+	AmountAllowed money(nan) NOT NULL, -- Fee schedule amount allotted for the claim line
+	AmountCharged money(nan) NOT NULL, -- Amount provider billed for the claim line
+	AmountMedicare money(nan), -- Amount that Medicare paid for the claim line
+	AmountInternalCOB money(nan), -- Coordination of benefits within organization (amount paid by different policy within the same organization)
+	AmountExternalCOB money(nan), -- Coordination of benefits with different organizations (amount paid by other organization/payer)
+	AmountCopay money(nan), -- Amount paid by the member as copay for the claim line
+	AmountDeductible money(nan), -- Amount paid by the member towards deductible for the claim line
+	AmountCoinsurance money(nan), -- Amount paid by the member for coinsurance for the claim line
+	AmountHSA money(nan), -- Amount paid with Health Savings Account by the member
+	ReceivedDate datetime(nan), -- Date claim was received by claims processor
+	AdjudicationDate datetime(nan), -- Date claim was adjudicated
+	PaidDate date(nan) NOT NULL, -- Date claim was paid
+	ServiceFromDate date(nan) NOT NULL, -- Date the service performed began
+	ServiceToDate date(nan) NOT NULL, -- Date the service performed ended
+	AdmissionDate date(nan) NOT NULL, -- Date the patient originally came to the facility
+	DischargeDate date(nan) NOT NULL, -- Date the patient was discharged from the facility
+	ServiceID varchar(255), -- Identifies the unique service. Concatenation of billing provider, member, procedure, and service from date.
+	ProcedureCode varchar(10) NOT NULL, -- CPT or HCPC II code for the procedure performed
+	ProcedureDescription varchar(255) NOT NULL, -- Description of the procedure code/procedure
+	ProcedureNumberOfUnits int(nan) NOT NULL, -- Number of units the procedure was billed for
+	ProcedureMod_1 varchar(2) NOT NULL, -- Any modifiers attached to procedure code
+	ProcedureMod_2 varchar(2) NOT NULL, -- Any modifiers attached to procedure code
+	ProcedureMod_3 varchar(2), -- Any modifiers attached to procedure code
+	ProcedureMod_4 varchar(2), -- Any modifiers attached to procedure code
+	RevenueCode varchar(10) NOT NULL, -- Revenue code for claims billed on UB-04
+	RevenueDescription varchar(255) NOT NULL, -- Revenue code description
+	VisitID varchar(255), -- Identifier for the composite visit. Visits are assigned for UB-04 claims based on a continuous stay in a facility based on revenue codes regardless of the number of claims. LOA claims will terminate visits as the patient is no longer in the facility.
+	ClaimLengthOfStay int(nan), -- Number of total days for the specific claim
+	VisitLengthOfStay int(nan), -- Number of total days for the composite visit
+	TypeOfServiceCode varchar(10), -- Type/category of service code
+	TypeOfServiceDescription varchar(255), -- Type/category of service description
+	PlaceOfServiceCode varchar(10) NOT NULL, -- Code indicating what type of setting (hospital, office, home)
+	PlaceOfServiceDescription varchar(255) NOT NULL, -- Description of place of service (hospital, office, home)
+	LocationID varchar(30) NOT NULL, -- Identifier for the unique location where the service was performed
+	LocationZipCode varchar(10) NOT NULL, -- Zip code where the service was performed
+	MemberDistanceToLocation numeric(18,2), -- Calculated distance between member zip code and location zip code
+	MedicalRecordNumber varchar(30), -- Number linking the claim to a medical record
+	PriorAuthorizationNumber varchar(30) NOT NULL, -- Number signifying provider gave required authorization for the claim
+	MCOFlag char(1), -- Whether or not an MCO paid the claim
+	MCOName varchar(150), -- Name of the MCO that paid the claim
+	MCOClaimICN varchar(30), -- MCO assigned Claim ICN
+	UncoveredServiceFlag char(1), -- For claims paid by an MCO from the context of a public payer. 1 if the public payer does not cover the service, 0 otherwise
+	InstitutionalFlag char(1), -- Indicates whether the rendering provider on the claim is an institution
+	EmergencyFlag char(1), -- Indicates whether the service was performed in emergency circumstances
+	TraumaFlag char(1), -- Indicates whether the service was performed due to acute trauma
+	DiagnosisCodeType varchar(10) NOT NULL, -- ICD-9, ICD-10, or other diagnosis classification system used for the primary and secondary diagnosis codes
+	PrimaryDiagnosisCode varchar(10) NOT NULL, -- Primary diagnosis associated with this claim
+	PrimaryDiagnosisDescription varchar(255), -- Description of the primary diagnosis
+	SecondaryDiagnosisCode varchar(10), -- Secondary diagnosis associated with this claim. Any additional diagnoses can be found in the Diagnosis table.
+	SecondaryDiagnosisDescription varchar(255), -- Description of the secondary diagnosis
+	RenderingProviderAnalyticsID varchar(25) NOT NULL, -- Rendering Provider ID for the purpose of analytics. This can be either the plan provided ID, the NPI, the Medicaid ID, etc.
+	RenderingProviderAnalyticsIDType varchar(20) NOT NULL, -- What type of ID was used as the Analytics ID
+	RenderingProviderAnalyticsPeerGroup varchar(255) NOT NULL, -- Primary rendering provider classification used in analytics.
+	RenderingProviderAnalyticsPeerGroupType varchar(50) NOT NULL, -- Which taxonomy classification is used in analytics. Could be Taxonomy Group/Class, Provider Type/Specialty
+	RenderingProviderID varchar(25) NOT NULL, -- Plan ID for individual practitioner who rendered/performed the service
+	RenderingProviderNPI varchar(10) NOT NULL, -- National Provider Identifier of the rendering provider
+	RenderingProviderName varchar(300) NOT NULL, -- First and last name of the rendering provider
+	RenderingProviderTaxonomyCode varchar(10), -- Taxonomy code linked to the Rendering Provider NPI
+	RenderingProviderTaxonomyGroup varchar(100), -- Taxonomy group derived from NPI
+	RenderingProviderTaxonomyClass varchar(150), -- Taxonomy class derived from NPI
+	RenderingProviderTaxonomySpecialty varchar(150), -- Taxonomy specialty derived from NPI
+	RenderingProviderTypeCode varchar(5), -- Plan based provider type code
+	RenderingProviderTypeDescription varchar(255), -- Plan based provider type description
+	RenderingProviderSpecialtyCode varchar(5), -- Plan based provider specialty code
+	RenderingProviderSpecialtyDescription varchar(255), -- Plan based provider specialty description
+	BillingProviderAnalyticsID varchar(25) NOT NULL, -- Billing Provider ID for the purpose of analytics. This can be either the plan provided ID, the NPI, the Medicaid ID, etc.
+	BillingProviderAnalyticsIDType varchar(20) NOT NULL, -- What type of ID was used as the Analytics ID
+	BillingProviderAnalyticsPeerGroup varchar(255) NOT NULL, -- Primary billing provider classification used in analytics.
+	BillingProviderAnalyticsPeerGroupType varchar(50) NOT NULL, -- Which taxonomy classification is used in analytics. Could be Taxonomy Group/Class, Provider Type/Specialty
+	BillingProviderID varchar(25) NOT NULL, -- Plan ID for provider who billed for the service
+	BillingProviderNPI varchar(10) NOT NULL, -- National Provider Identifier of the billing provider
+	BillingProviderName varchar(300) NOT NULL, -- Name of the billing provider
+	BillingProviderTaxonomyCode varchar(10), -- Taxonomy code linked to the Billing Provider NPI
+	BillingProviderTaxonomyGroup varchar(100), -- Taxonomy group derived from NPI
+	BillingProviderTaxonomyClass varchar(150), -- Taxonomy class derived from NPI
+	BillingProviderTaxonomySpecialty varchar(150), -- Taxonomy specialty derived from NPI
+	BillingProviderTypeCode varchar(5), -- Plan based provider type code
+	BillingProviderTypeDescription varchar(255), -- Plan based provider type description
+	BillingProviderSpecialtyCode varchar(5), -- Plan based provider specialty code
+	BillingProviderSpecialtyDescription varchar(255), -- Plan based provider specialty description
+	BillingProviderZipCode varchar(10) NOT NULL, -- Billing provider's zip code
+	BillingProviderTIN varchar(15) NOT NULL, -- Billing provider's Tax Identification Number
+	AttendingProviderAnalyticsID varchar(25), -- Attending Provider ID for the purpose of analytics. This can be either the plan provided ID, the NPI, the Medicaid ID, etc.
+	AttendingProviderAnalyticsIDType varchar(20), -- What type of ID was used as the Analytics ID
+	AttendingProviderAnalyticsPeerGroup varchar(255), -- Primary attending provider classification used in analytics.
+	AttendingProviderAnalyticsPeerGroupType varchar(50), -- Which taxonomy classification is used in analytics. Could be Taxonomy Group/Class, Provider Type/Specialty
+	AttendingProviderID varchar(25), -- Plan ID for attending provider. Not always populated as there is not always an attending provider (along with all the other attending provider fields).
+	AttendingProviderNPI varchar(10), -- National Provider Identifier for the attending provider
+	AttendingProviderName varchar(300), -- Name of the attending provider
+	AttendingProviderTaxonomyCode varchar(10), -- NPI linked taxonomy code of the attending provider
+	AttendingProviderTaxonomyGroup varchar(100), -- Taxonomy group derived from the NPI taxonomy code
+	AttendingProviderTaxonomyClass varchar(150), -- Taxonomy class derived from the NPI taxonomy code
+	AttendingProviderTaxonomySpecialty varchar(150), -- Taxonomy specialty derived from the NPI taxonomy code
+	AttendingProviderTypeCode varchar(5), -- Plan based provider type code
+	AttendingProviderTypeDescription varchar(255), -- Plan based provider type description
+	AttendingProviderSpecialtyCode varchar(5), -- Plan based provider specialty code
+	AttendingProviderSpecialtyDescription varchar(255), -- Plan based provider specialty description
+	ReferringProviderAnalyticsID varchar(25) NOT NULL, -- Referring Provider ID used for the purpose of analytics
+	ReferringProviderAnalyticsIDType varchar(20), -- Type of ID used for analytics (plan, NPI, etc)
+	ReferringProviderAnalyticsPeerGroup varchar(255), -- Primary referring provider classification used in analytics.
+	ReferringProviderAnalyticsPeerGroupType varchar(50), -- Which taxonomy classification is used in analytics. Could be Taxonomy Group/Class, Provider Type/Specialty
+	ReferringProviderID varchar(25), -- ID of a different provider who referred this member to this provider. Not always populated as there is not always a referring provider (along with all the other referring provider fields).
+	ReferringProviderNPI varchar(10), -- National Provider Identifier for referring provider
+	ReferringProviderName varchar(300), -- Full name of referring provider
+	ReferringProviderTaxonomyCode varchar(10), -- NPI linked taxonomy code of the referring provider
+	ReferringProviderTaxonomyGroup varchar(100), -- Taxonomy group derived from the NPI taxonomy code
+	ReferringProviderTaxonomyClass varchar(150), -- Taxonomy class derived from the NPI taxonomy code
+	ReferringProviderTaxonomySpecialty varchar(150), -- Taxonomy specialty derived from the NPI taxonomy code
+	ReferringProviderTypeCode varchar(5), -- Plan based provider type code
+	ReferringProviderTypeDescription varchar(255), -- Plan based provider type description
+	ReferringProviderSpecialtyCode varchar(5), -- Plan based provider specialty code
+	ReferringProviderSpecialtyDescription varchar(255), -- Plan based provider specialty description
+	ReferringProviderZipCode varchar(10), -- Zip code of the referring provider
+	MemberAnalyticsID varchar(30) NOT NULL, -- ID used for the purpose of analytics. Could be member ID, cardholder ID, etc.
+	MemberAnalyticsIDType varchar(20) NOT NULL, -- What type of ID was used as the Analytics ID
+	MemberMonthID int(nan), -- If the member file is structured at a member-month level, then the member-month used for that join
+	SubscriberID varchar(30) NOT NULL, -- ID of individual subscribed to the plan (could be relation of person receiving service)
+	CardholderID varchar(30) NOT NULL, -- ID of individual receving this service, as related to the subscriber ID
+	MemberID varchar(30), -- Unique ID of individual receiving the service. An individual on different plans might have different Cardholder IDs, but only one Member ID.
+	MemberName varchar(300) NOT NULL, -- Full name of the member
+	MemberFirstName varchar(100) NOT NULL, -- First name of the member
+	MemberLastName varchar(100) NOT NULL, -- Last name of the member
+	MemberAge int(nan), -- Age taken from the claims or calculated as the number of years between the member's birthday and the service from date.
+	MemberGender varchar(10) NOT NULL, -- Gender of the member
+	MemberDOB date(nan) NOT NULL, -- Member's date of birth
+	MemberDOD date(nan), -- Member's date of death
+	MemberAddressFirstLine varchar(255) NOT NULL, -- First line of the member's address (member file)
+	MemberAddressSecondLine varchar(255) NOT NULL, -- Second line of the member's address (member file)
+	MemberCity varchar(255) NOT NULL, -- City of the member's address (member file)
+	MemberState varchar(2) NOT NULL, -- State of the member's address (member file)
+	MemberZipCode varchar(10) NOT NULL, -- Zip code of the member (member file)
+	MemberPhone varchar(50) NOT NULL, -- Phone number for the member (member file)
+	MemberEmail varchar(255), -- Email address of the member (member file)
+	MemberHealthRiskFlag char(1), -- Indicates whether the member has a particularly risky health condition
+	YearOfService int(nan), -- Year the service was performed (calculated from date of service)
+	YearQuarter varchar(7), -- Quarter of the year service was performed (calculated from date of service)
+	location_address varchar(max), -- Internal address for service location used for geospatial analytics
+	location_latitude float(nan), -- Latitude of service location
+	location_longitude float(nan), -- Longitude of service location
+	member_address varchar(max), -- Internal address for member used for geospatial analytics
+	member_latitude float(nan), -- Latitude of member's address
+	member_longitude float(nan), -- Longitude of member's address
+	ETLCreateDate datetime(nan), -- Date record was created
+)
+pull HEALTHCARE COMMON PROCEDURE CODING SYSTEM and always use appropriate PROCEDURE codes FOR THE PROCEDURES when identifying procedures from the table.
+All the following procedure modifier codes tell that the procedure was done using telehealth ['GT','02','10','93', '95', 'GQ', 'G0'] if it is a telehealth claim then the procedure code should not be equal to 'Q3014'.
+for example, for the question: Retrieve all data for members who got a Hepatitis C and HIV test on the same date of service
+Response should be SELECT primary.*, secondary.*
+FROM ALIV_MedicalClaimLineApproved AS primary
+INNER JOIN ALIV_MedicalClaimLineApproved AS secondary
+        ON primary.MemberAnalyticsID = secondary.MemberAnalyticsID
+        AND primary.BillingProviderAnalyticsID = secondary.BillingProviderAnalyticsID
+        AND primary.ServiceFromDate = secondary.ServiceFromDate
+WHERE primary.ProcedureCode IN ('80074', '86703')
+        AND secondary.ProcedureCode = '87341'
+
+And for the questions: Display all details for members who had a colonoscopy and biopsy on the same date of service
+Response: SELECT first.*, second.*
+FROM ALIV_MedicalClaimLineApproved AS first
+INNER JOIN ALIV_MedicalClaimLineApproved AS second
+        ON first.MemberAnalyticsID = second.MemberAnalyticsID
+        AND first.BillingProviderAnalyticsID = second.BillingProviderAnalyticsID
+        AND first.ServiceFromDate = second.ServiceFromDate
+WHERE first.ProcedureCode IN ('45378','45380')
+        AND second.ProcedureCode = '88305'
+
+For the question, Show me metrics for providers who registered between March 2020 to June 2020
+
+Response: SELECT MIN(pr.EffectiveDate) AS 'RenderingProviderEffectiveDate', 
+	cl.RenderingProviderAnalyticsID AS 'RenderingProviderAnalyticsID', 
+	MAX(cl.RenderingProviderName) AS 'RenderingProviderName', 
+	SUM(cl.AmountPaid) AS 'AmountPaid', 
+	COUNT(cl.ClaimSeq) AS 'NumberClaims', 
+	COUNT(DISTINCT cl.MemberAnalyticsID) AS 'NumberMembers', 
+	1.0 * COUNT(ClaimSeq) / COUNT(DISTINCT ServiceFromDate) AS 'AverageNumberClaimsPerDay'
+FROM [ai_analysis].[dbo].[ALIV_MedicalClaimApproved] AS cl Inner Join [ai_analysis].[dbo].[ALIV_ProviderFile] AS pr
+	on cl.RenderingProviderAnalyticsID = pr.ProviderAnalyticsID
+	WHERE pr.EffectiveDate BETWEEN '2020-03-01' AND '2020-06-30' 
+GROUP BY cl.RenderingProviderAnalyticsID
+
