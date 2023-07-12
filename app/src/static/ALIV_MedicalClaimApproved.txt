@@ -24,7 +24,7 @@ CREATE TABLE AI_AllMedicalClaimsApproved (
 	AdmissionDate date(nan) NOT NULL, -- Date the patient originally came to the facility
 	DischargeDate date(nan) NOT NULL, -- Date the patient was discharged from the facility
 	ServiceID varchar(255), -- Identifies the unique service. Concatenation of billing provider, member, procedure, and service from date.
-	ProcedureCode varchar(10) NOT NULL, -- CPT or HCPC II code for the procedure performed
+	ProcedureCode varchar(10) NOT NULL, -- CPT or HCPC II code for the procedure performed e.g., 92507 for Speech/hearing therapy and 92523 for Oral function therapy.
 	ProcedureDescription varchar(255) NOT NULL, -- Description of the procedure code/procedure
 	ProcedureNumberOfUnits int(nan) NOT NULL, -- Number of units the procedure was billed for
 	ProcedureMod_1 varchar(2) NOT NULL, -- Any modifiers attached to procedure code
@@ -124,7 +124,7 @@ CREATE TABLE AI_AllMedicalClaimsApproved (
 	MemberAnalyticsIDType varchar(20) NOT NULL, -- What type of ID was used as the Analytics ID
 	MemberMonthID int(nan), -- If the member file is structured at a member-month level, then the member-month used for that join
 	SubscriberID varchar(30) NOT NULL, -- ID of individual subscribed to the plan (could be relation of person receiving service)
-	CardholderID varchar(30) NOT NULL, -- ID of individual receving this service, as related to the subscriber ID
+	CardholderID varchar(30) NOT NULL, -- ID of individual receiving this service, as related to the subscriber ID
 	MemberID varchar(30), -- Unique ID of individual receiving the service. An individual on different plans might have different Cardholder IDs, but only one Member ID.
 	MemberName varchar(300) NOT NULL, -- Full name of the member
 	MemberFirstName varchar(100) NOT NULL, -- First name of the member
@@ -152,7 +152,7 @@ CREATE TABLE AI_AllMedicalClaimsApproved (
 	ETLCreateDate datetime(nan), -- Date record was created
 )
 pull HEALTHCARE COMMON PROCEDURE CODING SYSTEM and always use appropriate PROCEDURE codes FOR THE PROCEDURES when identifying procedures from the table.
-All the following procedure modifier codes tell that the procedure was done using telehealth ['GT','02','10','93', '95', 'GQ', 'G0'] if it is a telehealth claim then the procedure code should not be equal to 'Q3014'.
+All the following procedure modifier codes tell that the procedure was done using telehealth ['GT','93', '95', 'GQ', 'G0'] or place of service code is either "02" or "10". if it is a telehealth claim then the procedure code should not be equal to 'Q3014'.
 for example, for the question: Retrieve all data for members who got a Hepatitis C and HIV test on the same date of service
 Response should be SELECT primary.*, secondary.*
 FROM ALIV_MedicalClaimLineApproved AS primary
@@ -172,6 +172,7 @@ INNER JOIN ALIV_MedicalClaimLineApproved AS second
         AND first.ServiceFromDate = second.ServiceFromDate
 WHERE first.ProcedureCode IN ('45378','45380')
         AND second.ProcedureCode = '88305'
+
 
 For the question, Show me metrics for providers who registered between March 2020 to June 2020
 

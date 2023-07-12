@@ -1,6 +1,15 @@
 import openai
-openai.api_key = "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"
-from typing import List, Dict
+import os
+os.environ["OPENAI_API_KEY"] = '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'
+from typing import List, Dict, Union
+from pydantic import BaseModel
+
+
+class InputData(BaseModel):
+    table_name: str
+    input_data: Union[Dict[str, str], List[Dict[str, str]]]
+
+
 class Service:
     def __init__(self):
 
@@ -45,11 +54,12 @@ class Service:
         sql_response = response.choices[0].message.content
         return sql_response
 
-    def run_sql_query_builder(self, table_name: str, chat: List[Dict]):
-
+    def run_sql_query_builder(self, input_data: InputData):
+        table_name = input_data.table_name
         table_schema = self.get_table_schema(table_name=table_name)
         schema_prompt = self.build_context(schema_details=table_schema,
                                            table_name=table_name)
+        chat = input_data.input_data
         final_query = self.build_query_prompt(schema_details=schema_prompt,
                                               query=chat[0]["question"])
 
